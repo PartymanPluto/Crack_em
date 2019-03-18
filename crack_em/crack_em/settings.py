@@ -14,6 +14,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crack_app',
+    'registration',
 ]
 
 MIDDLEWARE = [
@@ -128,8 +130,12 @@ MEDIA_ROOT = MEDIA_DIR
 MEDIA_URL = '/media/'
 
 
-
-
+#Registration package configuration
+REGISTRATION_OPEN = True
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_REDIRECT_URL = '/crack_em/'
+LOGIN_URL = '/accounts/login/'
 
 
 
