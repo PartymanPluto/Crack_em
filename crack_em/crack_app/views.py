@@ -29,7 +29,7 @@ def FAQ(request):
 #Views for eggs and recipes
 def eggs(request):
     #To add: cookies
-    egg_list = Egg.objects.order_by('views')
+    egg_list = Egg.objects.order_by(len('recipes'))
     cd = {'eggs'}
     
     response = render(request, 'crack_em/egg_types.html', cd)
@@ -57,22 +57,15 @@ def show_recipe(request, recipe_name_slug):
         cd = {'recipe': recipe}
     except Recipe.DoesNotExist:
         cd = {'recipe': None}
-    
     return render(request, 'crack_em/recipe.html', cd)
 
-def add_recipe(request, egg_name_slug):
-    try:
-        egg_type = Egg.objects.get(slug=egg_name_slug)
-    except egg_type.DoesNotExist:
-        egg_type = 'other'
-    
+def add_recipe(request):
     form = RecipeForm()
     if request.method == "POST":
-        form = RecipeForm(request.POST)
+        form = RecipeForm(request.POST, egg_type)
         
         if form.is_valid():
             recipe = form.save(commit =False)
-            recipe.egg_type = egg_type
             recipe.views = 0
             recipe.average_rating = 0
             recipe.ratings = []
@@ -105,19 +98,47 @@ def user_account_page(request, account_name_slug):
         cd['Profile'] = None
     
     return render(request, 'crack_em/account_page.html', cd)
-    
+
+#Class for handling user authentication
 class MyRegistrationView(RegistrationView):
     def get_success_url(self, user):
         return '/crack_em/'
 
+#Views for liking and commenting
+@login_required
+def like_recipe(request):
+    rec_id = None
+    if request.method == 'GET':
+        rec_id = request.GET['recipe_id']
+    likes = 0
+    if rec_id:
+        rec = Recipe.objects.get(id=int(rec_id))
+        if rec:
+            likes = rec.likes + 1
+            rec.save()
+    return HttpResponse(likes)
+
+#!-----WIP functions------!
+def add_comment(request):
+    rec_id = None
+    if request.method == 'GET':
+        rec_id = request.GET['recipe_id']
+    comments = []
+    if rec_id:
+        rec = Recipe.objects.get(id=int(rec_id))
+        if rec:
+            comments = rec.comments + 
+            
+#!-----------------!
+
 #Cookie handling 
-def get_server_side_cookie(request, cookie, default_val=None):
+"""def get_server_side_cookie(request, cookie, default_val=None):
     val = request.session.get(cookie)
     if not val:
         val = default_val
-    return val
+    return val"""
 
-def visitor_cookie_handler(request):
+"""def visitor_cookie_handler(request):
     visits = int(get_server_side_cookie(request, 'visits', '1'))
     last_visit_cookie = get_server_side_cookie(request,
                                                'last_visit', 
@@ -131,7 +152,7 @@ def visitor_cookie_handler(request):
     else:
         request.session['last_visit'] = last_visit_cookie 
         
-    request.session['visits'] = visits
+    request.session['visits'] = visits"""
     
     
     
