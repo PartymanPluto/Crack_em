@@ -5,20 +5,22 @@ from django.contrib.auth.models import User
 
 
 class Egg(models.Model):
+    slug = models.SlugField(unique=True)
     SCRAMBLED = 'scrambled'
-    BOILED = 'boiled'
+    OMLETTE = 'omlette'
     FRIED = 'fried'
     POACHED = 'poached'
     OTHER = 'other'
     EGG_CHOICES = (
         (SCRAMBLED, 'Scrambled'),
-        (BOILED, 'Boiled'),
+        (OMLETTE, 'Omlette'),
         (FRIED, 'Fried'),
         (POACHED, 'Poached'),
         (OTHER, 'Other'),
     )
     
     egg_type = models.CharField(
+        max_length = 128,
         choices = EGG_CHOICES,
         default = SCRAMBLED        
     )

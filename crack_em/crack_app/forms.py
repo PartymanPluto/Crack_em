@@ -10,7 +10,7 @@ from crack_app.models import Recipe, UserProfile, Comment
 from django.contrib.auth.models import User
 
 EGG_TYPES = [('omlette', 'An omlette'),
-             ('boiled', 'Fried'),
+             ('fried', 'Fried'),
              ('scrambled', 'Scrambled'),
              ('poached', 'Poached'),
              ('sauce/filling', 'Sauce/Filling'),

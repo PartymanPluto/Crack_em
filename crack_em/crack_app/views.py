@@ -1,21 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from crack_app.models import Egg, Recipe, Comment, UserProfile
-from crack_app.forms import RecipeForm, CommentForm, UserForm, UserProfileForm
+from crack_app.forms import RecipeForm, CommentForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from registration.backends.simple.views import RegistrationView
 
 #Basic pages
 def home(request):
-    #To add: cookies
     recipe_list = Recipe.objects.order_by('views')[:5]
     cd = {'recipes':recipe_list}
     
     #visitor_cookie_handler(request)
     #cd['visit'] = request.session['visits']
     
-    response = render(request, 'crack_em/home.html', cd)
+    response = render(request, 'crack_app/home.html', cd)
     return response
 
 def about(request):
@@ -38,11 +37,11 @@ def eggs(request):
     response = render(request, 'crack_em/egg_types.html', cd)
     return response
 
-def show_eggs(request, egg_name_slug):
+def show_eggs(request, egg_slug):
     cd = {}
     
     try:
-        egg_type = Egg.objects.get(slug = egg_name_slug)
+        egg_type = Egg.objects.get(slug = egg_slug)
         recipes = Recipe.objects.filter(egg_type = egg_type)
         
         cd['egg'] = egg_type

@@ -1,0 +1,27 @@
+{% extends 'crack_app/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+	{{ egg.name }}
+{% endblock %}
+category
+{% block body_block %}
+	{% if egg %}
+		<h1>{{ egg.name }}</h1>
+		
+		{% if recipes %}
+			<ul>
+			{% for page in pages %}
+				<li><a href="{{ recipe.url }}">{{ recipe.title }}</a></li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<strong>There are no recipes for this type of egg at the moment.</strong>
+		{% endif %}
+		<a href="{% url 'add_recipe' egg.slug %}">Add a Recipe!</a>
+	{% else %}
+		The specified egg does not exist!
+	{% endif %}
+{% endblock %}
+
+
