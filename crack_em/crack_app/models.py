@@ -1,9 +1,10 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
 # Create your models here.
 
 
-class Category(models.Model):
+class Egg(models.Model):
     SCRAMBLED = 'scrambled'
     BOILED = 'boiled'
     FRIED = 'fried'
@@ -27,10 +28,11 @@ class Category(models.Model):
     
     
     
-class Page(models.Model):
-    category = models.ForeignKey(Category)
+class Recipe(models.Model):
+    category = models.ForeignKey(Egg)
     title = models.CharField(max_length = 128)
-    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = null)
+    author = models.ForeignKey(User)
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = None)
     url = models.URLField()
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
@@ -38,7 +40,7 @@ class Page(models.Model):
     
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Page, self).save(*args, **kwargs)
+        super(Recipe, self).save(*args, **kwargs)
     
     class Meta:
         verbose_name_plural =  'pages'
@@ -47,12 +49,14 @@ class Page(models.Model):
         return self.title
     
 class Comment(models.Model):
+    user = models.ForeignKey(User)
     content = models.CharField(max_length = 512)
     
-#Not sure if this is needed
-class user(models.model):
-    profile_pic = models.FileField(upload_to='uploads/%Y/%m/%d/', default = null)
-    name = models.CharField(max_length = 128)
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    picture = models.ImageField(upload_to='profile_images', blank=True)
+    
+    
     
     
     

@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from crack_app.models import Egg, Recipe
+from crack_app.models import Egg, Recipe, Comment, UserProfile
+from crack_app.forms import RecipeForm, CommentForm, UserForm, UserProfileForm
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from registration.backends.simple.views import RegistrationView
 
 #Basic pages
@@ -9,8 +12,8 @@ def home(request):
     recipe_list = Recipe.objects.order_by('views')[:5]
     cd = {'recipes':recipe_list}
     
-    visitor_cookie_handler(request)
-    cd['visit'] = request.session['visits']
+    #visitor_cookie_handler(request)
+    #cd['visit'] = request.session['visits']
     
     response = render(request, 'crack_em/home.html', cd)
     return response
@@ -30,7 +33,7 @@ def FAQ(request):
 def eggs(request):
     #To add: cookies
     egg_list = Egg.objects.order_by(len('recipes'))
-    cd = {'eggs'}
+    cd = {'eggs': egg_list}
     
     response = render(request, 'crack_em/egg_types.html', cd)
     return response
@@ -54,26 +57,48 @@ def show_eggs(request, egg_name_slug):
 def show_recipe(request, recipe_name_slug):
     try:
         recipe = Recipe.objects.get(slug = recipe_name_slug)
-        cd = {'recipe': recipe}
+        comments = Comment.objects.filter(recipe = recipe)
+        cd = {'recipe': recipe, 'comments':comments}
     except Recipe.DoesNotExist:
-        cd = {'recipe': None}
+        cd = {'recipe': None, 'comments':None}
+    if recipe:
+        formC = CommentForm()
+        #formR = RatingForm()
+        if request.method == "POST":
+            data = request.POST
+            if 'submit_comment' in data:
+                formC = CommentForm(data)
+                if formC.is_valid():
+                    comment = formC.save(commit = False)
+                    recipe.comments.append(comment)
+                    return show_recipe(request, recipe_name_slug)
+                else:
+                    print(formC.errors)
+            '''elif 'submit_rating' in data:
+                formR = RatingForm(data)
+                if formC.is_valid():
+                    comment = formC.save(commit = False)
+                    recipe.comments.append(comment)
+                    return show_recipe(request, recipe_name_slug)
+                else:
+                    print(form.errors)'''
     return render(request, 'crack_em/recipe.html', cd)
 
 def add_recipe(request):
     form = RecipeForm()
     if request.method == "POST":
-        form = RecipeForm(request.POST, egg_type)
+        form = RecipeForm(request.POST)
         
         if form.is_valid():
             recipe = form.save(commit =False)
             recipe.views = 0
             recipe.average_rating = 0
             recipe.ratings = []
-            return show_eggs(request, egg_name_slug)
+            return show_recipe(request, recipe.slug)
         else:
             print(form.errors)
 
-    cd = {'form':form, 'egg':egg_type}
+    cd = {'form':form}
     return render(request, 'crack_em/add_recipe.html', cd)
 
 
@@ -86,7 +111,7 @@ def user_account_page(request, account_name_slug):
     try:
         user = User.objects.get(username=account_name_slug)
         if request.user == user or request.user.is_authenticated():
-            profile = UserProfile.objects.filter(user.username=account_name_slug)
+            profile = UserProfile.objects.filter(user=account_name_slug)
         
             cd['User'] = user
             cd['Profile'] = profile
@@ -118,7 +143,20 @@ def like_recipe(request):
             rec.save()
     return HttpResponse(likes)
 
+@login_required
+def rate_recipe(request):
+    rec_id = None
+    if request.method == 'POST':
+        rec_id = request.POST['recipe_id']
+    ratings = []
+    average_rating = 0
+    if rec_id:
+        rec = Recipe.objects.get(id=int(rec_id))
+        if rec:
+            rec.ratings.append(request.POST)
+
 #!-----WIP functions------!
+'''@login_required
 def add_comment(request):
     rec_id = None
     if request.method == 'GET':
@@ -127,7 +165,7 @@ def add_comment(request):
     if rec_id:
         rec = Recipe.objects.get(id=int(rec_id))
         if rec:
-            comments = rec.comments + 
+            comments = rec.comments + '''
             
 #!-----------------!
 

@@ -27,10 +27,10 @@ class RecipeForm(forms.ModelForm):
     ratings = forms.IntegerField(widget=forms.HiddenInput(), initial={'0':0, 
                                  '1':0,'2':0,'3':0,'4':0,'5':0,'6':0,'7':0,
                                  '8':0,'9':0,'10':0})
-    Ingrediants = forms.TextField(help_text = '''Please enter your ingrediants 
+    Ingrediants = forms.CharField(help_text = '''Please enter your ingrediants 
                                   in a comma seperated list here in the form of 
                                   "IngrediantA : quantity".''')
-    Instructions = forms.TextField(help_text = '''You can enter the instuctions
+    Instructions = forms.CharField(help_text = '''You can enter the instuctions
                                    for your creation here!''')
     
     class Meta:
@@ -50,10 +50,10 @@ class UserProfileForm(forms.ModelForm):
         
     class Meta:
         model = UserProfile
-        fields = ('picture')
+        fields = ('picture',)
     
 class CommentForm(forms.ModelForm):
-    content = forms.TextField(help_text = '''Tell the chef our thoughts!''')
+    content = forms.CharField(help_text = '''Tell the chef our thoughts!''')
     
     class Meta:
         model = Comment

@@ -1,7 +1,7 @@
 from django.contrib import admin
-from crack_em.models import Category, Page
+from crack_app.models import Egg, Recipe
 
 
-admin.site.register(Category)
-admin.site.register(Page)
+admin.site.register(Egg)
+admin.site.register(Recipe)
 

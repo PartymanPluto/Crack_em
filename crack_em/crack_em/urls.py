@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^crack_em/', include('crack_em.urls')),
     url(r'^$', views.home, name= 'home'),
-    url(r'^accounts/', include('registration.backends.simple.urls')),
+    #url(r'^accounts/', include('registration.backends.simple.urls')),
     url(r'^accounts/register/$', views.MyRegistrationView.as_view(),
         name='registration_register'),
     ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
