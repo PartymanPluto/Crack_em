@@ -19,4 +19,5 @@ urlpatterns = [
             views.show_eggs, name='show_eggs'),
         url(r'^eggs/(?P<recipe_slug>[\w\-]+)/$', views.show_recipe, name='recipe'),
         url(r'^user/(?P<username_slug>[\w\-]+)/$', views.user_account_page, name='myAccount'),
+        url(r'^like/$', views.like_recipe, name='like recipe')
         ]
