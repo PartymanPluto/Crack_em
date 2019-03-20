@@ -30,7 +30,7 @@ class Category(models.Model):
 class Page(models.Model):
     category = models.ForeignKey(Category)
     title = models.CharField(max_length = 128)
-    upload = models.FileField(upload_to='uploads/%Y/%m/%d/')
+    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = null)
     url = models.URLField()
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
@@ -46,6 +46,13 @@ class Page(models.Model):
     def __str__(self):
         return self.title
     
+class Comment(models.Model):
+    content = models.CharField(max_length = 512)
+    
+#Not sure if this is needed
+class user(models.model):
+    profile_pic = models.FileField(upload_to='uploads/%Y/%m/%d/', default = null)
+    name = models.CharField(max_length = 128)
     
     
     
