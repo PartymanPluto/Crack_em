@@ -19,7 +19,8 @@ urlpatterns = [
             views.show_eggs, name='show_eggs'),
         url(r'^eggs/(?P<recipe_slug>[\w\-]+)/$', views.show_recipe, name='recipe'),
         url(r'^add_recipe/$', views.add_recipe, name='add_recipe'),
-        url(r'^user/(?P<username_slug>[\w\-]+)/$', views.user_account_page, name='myAccount'),
+        url(r'^user/(?P<username_slug>[\w\-]+)/$', views.user_account_page, name='profile'),
+        url(r'^register_profile/$', views.register_profile, name='register_profile'),
         url(r'^like/$', views.like_recipe, name='like recipe'),
         url(r'^rate/$', views.rate_recipe, name= 'rate recipe'),
         ]

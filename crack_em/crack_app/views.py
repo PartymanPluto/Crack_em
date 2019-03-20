@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse
 from crack_app.models import Egg, Recipe, Comment, UserProfile
-from crack_app.forms import RecipeForm, CommentForm
+from crack_app.forms import RecipeForm, CommentForm, UserProfileForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from registration.backends.simple.views import RegistrationView
@@ -14,17 +14,17 @@ def home(request):
     #visitor_cookie_handler(request)
     #cd['visit'] = request.session['visits']
     
-    response = render(request, 'crack_app/home.html', cd)
+    response = render(request, 'crack_app/egg_types.html', cd)
     return response
 
 def about(request):
-    return render(request, 'crack_em/about.html', {})
+    return render(request, 'crack_app/about.html', {})
 
 def contact(request):
-    return render(request, 'crack_em/contact.html', {})
+    return render(request, 'crack_app/contact.html', {})
     
 def FAQ(request):
-    return render(request, 'crack_em/FAQ.html', {})
+    return render(request, 'crack_app/FAQ.html', {})
 
 
 
@@ -34,7 +34,7 @@ def eggs(request):
     egg_list = Egg.objects.order_by(len('recipes'))
     cd = {'eggs': egg_list}
     
-    response = render(request, 'crack_em/egg_types.html', cd)
+    response = render(request, 'crack_app/egg_types.html', cd)
     return response
 
 def show_eggs(request, egg_slug):
@@ -51,7 +51,7 @@ def show_eggs(request, egg_slug):
         cd['egg'] = None
         cd['recipes'] = None
         
-    return render(request, 'crack_em/egg.html', cd)
+    return render(request, 'crack_app/egg.html', cd)
         
 def show_recipe(request, recipe_name_slug):
     try:
@@ -70,7 +70,7 @@ def show_recipe(request, recipe_name_slug):
                 if formC.is_valid():
                     comment = formC.save(commit = False)
                     recipe.comments.append(comment)
-                    return show_recipe(request, recipe_name_slug)
+                    return show_recipe('recipe', recipe_name_slug)
                 else:
                     print(formC.errors)
             '''elif 'submit_rating' in data:
@@ -81,7 +81,7 @@ def show_recipe(request, recipe_name_slug):
                     return show_recipe(request, recipe_name_slug)
                 else:
                     print(form.errors)'''
-    return render(request, 'crack_em/recipe.html', cd)
+    return render(request, 'crack_app/recipe.html', cd)
 
 def add_recipe(request):
     form = RecipeForm()
@@ -98,35 +98,62 @@ def add_recipe(request):
             print(form.errors)
 
     cd = {'form':form}
-    return render(request, 'crack_em/add_recipe.html', cd)
+    return render(request, 'crack_app/add_recipe.html', cd)
 
 
 
 #View for showing a user's account page    
 @login_required
-def user_account_page(request, account_name_slug):
+def user_account_page(request, username):
     cd = {}
     
     try:
-        user = User.objects.get(username=account_name_slug)
+        user = User.objects.get(username=username)
         if request.user == user or request.user.is_authenticated():
-            profile = UserProfile.objects.filter(user=account_name_slug)
-        
-            cd['User'] = user
-            cd['Profile'] = profile
+            profile = UserProfile.objects.filter(user=username)
+            form = UserProfileForm(
+                    {'picture': profile.picture})
+            if request.method == "POST":
+                form = UserProfileForm(
+                        request.FILES, instance=profile)
+                if form.is_valid():
+                    form.save(commit=True)
+                    return redirect('profile', user.username)
+                else:
+                    print(form.errors)
+            cd['selected_user'] = user
+            cd['selected_profile'] = profile
+            cd['form'] = form
         else:
             return render(request, 'crack_em/not_authenticated.html', cd)
             
     except User.DoesNotExist:
-        cd['User'] = None
-        cd['Profile'] = None
+        cd['selected_user'] = None
+        cd['selected_profile'] = None
+        cd['form'] = None
     
-    return render(request, 'crack_em/account_page.html', cd)
+    return render(request, 'crack_app/account_page.html', cd)
 
 #Class for handling user authentication
 class MyRegistrationView(RegistrationView):
     def get_success_url(self, user):
-        return '/crack_em/'
+        return reverse('register_profile')
+    
+@login_required
+def register_profile(request):
+    form = UserProfileForm
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            user_profile = form.save(commit=False)
+            user_profile.user = request.user
+            user_profile.save()
+            return redirect('index')
+        else:
+            print(form.errors)
+        
+    cd = {'form':form}
+    return render(request, 'crack_app/profile_registration.html', cd)
 
 #Views for liking and commenting
 @login_required

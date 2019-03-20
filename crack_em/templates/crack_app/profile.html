@@ -1,0 +1,34 @@
+{% extends 'crack_app/base.html' %}
+{% load staticfiles %}
+
+{% block title %} {{ selected_user.username }} Profile{% endblock %}
+
+{% block body_block %}
+<h1>{{selected_user.username}} Profile</h1>
+<img src="{{ MEDIA_URL }}{{selected_profile.picture }}"
+     width="300"
+     height="300"
+     alt="{{selected_user.username}}" />
+<br/>
+<div>
+    {% if selected_profile.ratings %}
+        <ul>
+        {% for recipe, rating in selected_profile.ratings.keys() %}
+            <li><a href="{{ recipe.url }}">{{ recipe.title }}</a></li><strong>{{ rating }}</strong>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>This user has not rated any recipes yet.</strong>
+    {% endif %}
+</div>
+<div>
+    {% if selected_user.username == user.username %}
+        <form method="post" action="." enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Update" />
+        </form>
+    {% endif %}
+</div>
+<div id="edit_profile"></div>
+
