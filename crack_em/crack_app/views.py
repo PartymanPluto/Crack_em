@@ -19,9 +19,6 @@ def home(request):
     recipes = {'Omlettes': omlettes, 'Fried': fried, 'Scrambled': scrambled, 'Poached': poached, 'Sauces & Fillings': sf, 'other': other}
     cd = {'recipes': recipes }
     
-    #visitor_cookie_handler(request)
-    #cd['visit'] = request.session['visits']
-    
     response = render(request, 'crack_app/egg_types.html', cd)
     return response
 
@@ -39,7 +36,7 @@ def FAQ(request):
 #Views for eggs and recipes
 def eggs(request):
     #To add: cookies
-    egg_list = Egg.objects.order_by(len('recipes'))
+    egg_list = Egg.objects.order_by('title')
     cd = {'eggs': egg_list}
     
     response = render(request, 'crack_app/egg_types.html', cd)
@@ -66,9 +63,6 @@ def show_recipe(request, recipe_name_slug):
         recipe = Recipe.objects.get(slug = recipe_name_slug)
         comments = Comment.objects.filter(recipe = recipe)
         cd = {'recipe': recipe, 'comments':comments}
-    except Recipe.DoesNotExist:
-        cd = {'recipe': None, 'comments':None, 'formC': None, 'formR': None}
-    if recipe:
         request.session.set_test_cookie()
         visitor_cookie_handler(request)
         recipe.views += request.session['visits']
@@ -109,6 +103,8 @@ def show_recipe(request, recipe_name_slug):
                 return redirect('login')
         cd['formC'] = formC
         cd['formR'] = formR
+    except Recipe.DoesNotExist:
+        cd = {'recipe': None, 'comments':None, 'formC': None, 'formR': None}
     return render(request, 'crack_app/recipe.html', cd)
 
 def add_recipe(request):
@@ -118,6 +114,7 @@ def add_recipe(request):
         
         if form.is_valid():
             recipe = form.save(commit =False)
+            recipe.author = request.user
             recipe.views = 0
             recipe.average_rating = 0
             return show_recipe(request, recipe.slug)
@@ -192,16 +189,16 @@ def register_profile(request):
 
 #Views for liking and commenting
 @login_required
-def like_recipe(request):
-    rec_id = None
+def like_profile(request):
+    profile_id = None
     if request.method == 'GET':
-        rec_id = request.GET['recipe_id']
+        profile_id = request.GET['recipe_id']
     likes = 0
-    if rec_id:
-        rec = Recipe.objects.get(id=int(rec_id))
-        if rec:
-            likes = rec.likes + 1
-            rec.save()
+    if profile_id:
+        profile = UserProfile.objects.get(id=int(profile_id))
+        if profile:
+            likes = profile.likes + 1
+            profile.save()
     return HttpResponse(likes)
 
 @login_required

@@ -19,14 +19,14 @@ class Egg(models.Model):
         (OTHER, 'Other'),
     )
     
-    egg_type = models.CharField(
+    title = models.CharField(
         max_length = 128,
         choices = EGG_CHOICES,
         default = SCRAMBLED        
     )
     
     def egg_selected(self):
-        return self.egg_type
+        return self.title
     
     
     
@@ -34,11 +34,10 @@ class Recipe(models.Model):
     egg_type = models.ForeignKey(Egg)
     title = models.CharField(max_length = 128)
     author = models.ForeignKey(User)
-    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = None)
-    ingrediants = models.CharField(max_length = 128)
-    instructions = models.CharField(max_length = 256)
+    image = models.ImageField(upload_to='uploads/%Y/%m/%d/', default = None)
+    ingrediants = models.CharField(max_length = 256)
+    instructions = models.CharField(max_length = 1024)
     views = models.IntegerField(default=0)
-    likes = models.IntegerField(default=0)
     average_rating = models.IntegerField(default=0)
     slug = models.SlugField()
     
@@ -63,8 +62,9 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     picture = models.ImageField(upload_to='profile_images', blank=True)
-    ratings = models
+    likes = models.IntegerField(default=0)
     rated = models.ManyToManyField(Recipe, blank=True)
+    
     
     def __str__(self):
         return self.user.username
