@@ -1,0 +1,26 @@
+{% extends 'crack_app/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Home
+{% endblock %}
+
+{% block body_block %}
+    <h1> Home </h1>
+    {% if recipes %}
+        {% for recipe_list in recipes %}
+            {% if recipe_list %}
+                <div>
+                    <h2>Our mosted viewed {{ recipe_list.key() }} Recipes </h2>
+                    <ul>
+                        {% for recipe in recipe_list %}
+                             <li><a href="{{recipe.url}}">{{ recipe.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+            {% else %}
+                <strong> It seems there are no {{ recipe_list.key() }} type recipes yet </strong>
+            {% endif %}
+        {% endfor %}
+            </div> 
+
+        

@@ -13,7 +13,7 @@ EGG_TYPES = [('omlette', 'An omlette'),
              ('fried', 'Fried'),
              ('scrambled', 'Scrambled'),
              ('poached', 'Poached'),
-             ('sauce/filling', 'Sauce/Filling'),
+             ('s/f', 'Sauce/Filling'),
              ('other', 'something else...')]
 
 RATINGS = [(1, "(1) Shell-shockingly bad!"), 
@@ -67,7 +67,7 @@ class CommentForm(forms.ModelForm):
         
 class RatingForm(forms.ModelForm):
     rated = forms.IntegerField(label= 'How did you find this recipe?',
-                               forms.Select(choice=ratings))
+                               widget = forms.Select(choices=RATINGS))
     
     class Meta:
         model = Rating

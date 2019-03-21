@@ -11,7 +11,7 @@ category
 		
 		{% if recipes %}
 			<ul>
-			{% for page in pages %}
+			{% for recipe in recipes %}
 				<li><a href="{{ recipe.url }}">{{ recipe.title }}</a></li>
 			{% endfor %}
 			</ul>

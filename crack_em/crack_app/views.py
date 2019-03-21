@@ -1,4 +1,5 @@
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, redirect
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from crack_app.models import Egg, Recipe, Comment, UserProfile, Rating
 from crack_app.forms import RecipeForm, CommentForm, UserProfileForm, RatingForm
@@ -9,8 +10,14 @@ from datetime import datetime
 
 #Basic pages
 def home(request):
-    recipe_list = Recipe.objects.order_by('views')[:5]
-    cd = {'recipes':recipe_list}
+    omlettes = Recipe.objects.filter(egg_type='omlette').order_by('views')[:5]
+    fried = Recipe.objects.filter(egg_type='fried').order_by('views')[:5]
+    scrambled = Recipe.objects.filter(egg_type='scrambled').order_by('views')[:5]
+    poached = Recipe.objects.filter(egg_type='poached').order_by('views')[:5]
+    sf = Recipe.objects.filter(egg_type='s/f').order_by('views')[:5]
+    other = Recipe.objects.filter(egg_type='other').order_by('views')[:5]
+    recipes = {'Omlettes': omlettes, 'Fried': fried, 'Scrambled': scrambled, 'Poached': poached, 'Sauces & Fillings': sf, 'other': other}
+    cd = {'recipes': recipes }
     
     #visitor_cookie_handler(request)
     #cd['visit'] = request.session['visits']
@@ -60,7 +67,7 @@ def show_recipe(request, recipe_name_slug):
         comments = Comment.objects.filter(recipe = recipe)
         cd = {'recipe': recipe, 'comments':comments}
     except Recipe.DoesNotExist:
-        cd = {'recipe': None, 'comments':None}
+        cd = {'recipe': None, 'comments':None, 'formC': None, 'formR': None}
     if recipe:
         request.session.set_test_cookie()
         visitor_cookie_handler(request)
@@ -76,7 +83,7 @@ def show_recipe(request, recipe_name_slug):
                     formC = CommentForm(data)
                     if formC.is_valid():
                         formC.save(commit = True)
-                        return show_recipe('recipe', recipe_name_slug)
+                        return redirect('recipe', recipe_name_slug)
                     else:
                         print(formC.errors)
                 elif 'submit_rating' in data:
@@ -99,7 +106,7 @@ def show_recipe(request, recipe_name_slug):
                         else:
                             print(formR.errors)
             else:
-                print("You need to be logged in to comment on/rate a recipe.")
+                return redirect('login')
         cd['formC'] = formC
         cd['formR'] = formR
     return render(request, 'crack_app/recipe.html', cd)
@@ -137,7 +144,7 @@ def user_account_page(request, username):
     
     try:
         user = User.objects.get(username=username)
-        if request.user == user or request.user.is_authenticated():
+        if request.user == user:
             profile = UserProfile.objects.filter(user=username)
             form = UserProfileForm(
                     {'picture': profile.picture})
@@ -153,14 +160,14 @@ def user_account_page(request, username):
             cd['selected_profile'] = profile
             cd['form'] = form
         else:
-            return render(request, 'crack_em/not_authenticated.html', cd)
+            return redirect('login')
             
     except User.DoesNotExist:
         cd['selected_user'] = None
         cd['selected_profile'] = None
         cd['form'] = None
     
-    return render(request, 'crack_app/account_page.html', cd)
+    return render(request, 'crack_app/profile.html', cd)
 
 #Class for handling user authentication
 class MyRegistrationView(RegistrationView):

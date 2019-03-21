@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
+{% load crack_em_tags %}
 
 <html>
 	<head lang="en">
@@ -21,9 +22,20 @@
 		<div>
 			<ul>
 				<li><a href="{% url 'home' %}">Home</a></li>
-				<li><a href="{% url 'eggs' %}">Eggs</a></li>
-				<li><a href="{% url 'add_recipe' %}">Add an Egg</a></li>
+            	<a href="{% url 'eggs' %}> Find recipes for your favourite type of egg here! </a>
+				<li><a href="{% url 'about' %}">About Us</a></li>
+				<li><a href="{% url 'contact' %}">Contact Us!</a></li>
+				<li><a href="{% url 'FAQ' %}">FAQ</a></li>				
+                <li><a href="{% url 'registration_register' %}">Sign Up</a></li>
+                <li><a href="{% url 'auth_login' %}">Login</a><li>
+                
 			</ul>
 		</div>
+		<div>
+    		{% block sidebar_block %}
+        		{% get_eggs egg %}
+        	  	<li><a href="{% url 'add_recipe' %}">Add your creation now!</a></li>    				
+        	{% endblock %}
+        </div>
 	</body>
 </html>
