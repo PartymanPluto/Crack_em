@@ -5,6 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE',
 import django
 django.setup()
 from crack_app.models import Egg, Recipe
+from django.contrib.auth.models import User
 
 def populate():
     #EGG_TYPES = ['omlette', 'fried', 'scrambled', 'poached', 'sauce', 'other']
@@ -12,9 +13,9 @@ def populate():
             {"title": "Olly's omlette for 1", 
              "author": "Jolly Olly",
              "egg_type": "omlette",
-             "ingrediants": """Eggs : 2 , water : 2 tbsp , salt : 1/8 tsp ,
+             "ing": """Eggs : 2 , water : 2 tbsp , salt : 1/8 tsp ,
              pepper : a dash, butter : 1 tsp , filling of choice : 1/3 cup""",
-             "instruction": """ Beat the eggs, water, salt and pepper in a 
+             "inst": """ Beat the eggs, water, salt and pepper in a 
              small bowl until blended.; Heat butter in 6 to 8-inch omelette pan
              or skillet over medium-high heat until hot. Tilt the pan to coat
              the bottom before pouring in the egg mixture.; Using a spatula or
@@ -28,9 +29,9 @@ def populate():
             {"title": "Spaceman's spectacular spanish omlette for 4",
              "author": "Spaceman2156",
              "egg_type": "omlette",
-             "ingrediants": """eggs : 6, potatoes : 500g, white onion : 1, 
+             "ing": """eggs : 6, potatoes : 500g, white onion : 1, 
              olive oil(extra-virgin) : 150ml, flat-leaf parsley : 3 tbsp""",
-             "instructions":"""Prep: Peel all 500g of potatoes and then cut 
+             "inst":"""Prep: Peel all 500g of potatoes and then cut 
              them up into thick slices. Chop your onion and heat the olive
              oil in a (preferably large) frying pan.; 
              Once the pan has been heating for a minute or 2, add the potatoes 
@@ -54,9 +55,9 @@ def populate():
             {"title":"Fried eggs 'sunny side on Leith' up",
              "author": "Poached proclaimer",
              "egg_type": "fried",
-             "ingrediants": """eggs: as many as needed, Plenty of olive oil 
+             "ing": """eggs: as many as needed, Plenty of olive oil 
              and butter: """,
-             "instructions": """Add enough oil to the pan so that it just 
+             "inst": """Add enough oil to the pan so that it just 
              thinly coats the bottom. Turn the heat to high and get the pan 
              and the oil really hot, so that the oil shimmers and flickers. 
              When it does, crack an egg into the pan. When the edges begin to 
@@ -69,9 +70,9 @@ def populate():
             {"title": "Mama's homemade cheesy scrambled eggs",
              "author": "Tutankhamun",
              "egg_type": "scrambled",
-             "ingrediants": """eggs: two, milk: a splash, cheese: way too much,
+             "ing": """eggs: two, milk: a splash, cheese: way too much,
              salt & pepper: a pinch each""",
-             "instructions": """Beat the two eggs in a small bowl until they 
+             "inst": """Beat the two eggs in a small bowl until they 
              are of a uniform consistency whilst pre-heating a small pot or 
              frying pan. ; 
              Put the milk and cheese in the pot/pan, gently stirring the 
@@ -86,11 +87,11 @@ def populate():
             {"title": "Green eggs and ham",
              "author": "Sam I am",
              "egg_type" : "poached",
-             "ingrediants": """Free-range eggs : 12, English muffins : 6, 
+             "ing": """Free-range eggs : 12, English muffins : 6, 
              white vinegar : 2 Tbsp, Oil : a splash, Spinach : 6 handfuls, 
              High quality ham : 12 slices, Pesto sauce/hollandaise : as needed 
              but roughly 500g""",
-             "instructions": """Heat an oven to 100C. ;
+             "inst": """Heat an oven to 100C. ;
              Place a saucepan of salted water on the heat and bring to the 
              boil, then add the white vinegar. ;
              Toast the english muffins and then keep them warm in the oven 
@@ -111,12 +112,12 @@ def populate():
             {"title": "The 'Why so serious' side egg salad",
              "author": "ThE YoKEr42069",
              "egg_type": "sauce",
-             "ingrediants": """peeled, hard-boiled eggs : 12, chopped green 
+             "ing": """peeled, hard-boiled eggs : 12, chopped green 
              onion : 1/4 cup, chopped celery : 1/2 cup, chopped red bell 
              pepper : 1/2 cup, Djon mustard : 2 Tbsp, mayonaise : 1/3 cup, 
              cider(preferably dark fruits) : 1 Tbsp, Tabasco : 1/4 tsp, 
              paprika : 1/2 tsp, black pepper : 1/2 tsp, slat : 1/4 tsp""",
-             "instructions": """Prep: To hard boil eggs, place them a saucepan 
+             "inst": """Prep: To hard boil eggs, place them a saucepan 
              or small pot and cover with water. Bring to boil, then remove from
              heat, cover with cold water for a minute and leave for 5 minutes.;
              Chop the eggs coarsely and put them into a large bowl. Add the 
@@ -129,11 +130,11 @@ def populate():
             {"title": "Killer Queen's 'sheer heart attack inducing' scotch eggs",
              "author": "Hand lover99",
              "egg_type": "other",
-             "ingrediants": """eggs : 8 , plain sausage meat : 450g, mixed 
+             "ing": """eggs : 8 , plain sausage meat : 450g, mixed 
              herbs (chopped) : 3 tbsp, ground mace: a pinch, mustard : 1 tbsp,
              milk : a splash, flour : 50g, breadcrumbs : 100g, vegitable oil : 
              as needed""", 
-             "instructions":"""Put six of the eggs into a pan, cover with cold
+             "inst":"""Put six of the eggs into a pan, cover with cold
              water and bring to the boil . Turn down the heat and simmer for 
              five minutes, then put straight into a large bowl of iced water 
              for at least ten minutes. ;
@@ -160,8 +161,10 @@ def populate():
     #for egg in EGG_TYPES:
         #add_egg(egg)
     for rec in recipes:
-        add_recipe(rec["title"], rec["author"], rec["egg_type"], 
-                   rec["ingrediants"], rec["instructions"])
+        author = add_user(rec["author"])
+        add_recipe(rec["title"], author, rec["egg_type"], 
+                   rec["ing"], rec["inst"])
+        print("- {0} - [1]".format(rec["title"]))
 
 #def add_egg(t):
  #   e = Egg.objects.get_or_create(title=t)
@@ -175,6 +178,14 @@ def add_recipe(t, a, et, ing, inst):
     r.average_rating = 0
     r.save()
     return r
+
+def add_user(name):
+    user = User.objects.get_or_create(username=name, password = None, email=None)[0]
+    return user
+
+if __name__ == '__main__':
+    print("Starting Rango population script...")
+    populate()
 
 
 

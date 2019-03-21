@@ -28,7 +28,7 @@ class EggForm(forms.ModelForm):
     
     class Meta:
         model = Egg
-        fields = ('title')
+        fields = ('title',)
         
 class RecipeForm(forms.ModelForm):
     title = forms.CharField(max_length = 128, 
