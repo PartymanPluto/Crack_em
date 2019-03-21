@@ -34,11 +34,10 @@ class Recipe(models.Model):
     egg_type = models.ForeignKey(Egg)
     title = models.CharField(max_length = 128)
     author = models.ForeignKey(User)
-    upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = None)
+    upload = models.ImageField(upload_to='Recipe_images', blank = True)
     ingrediants = models.CharField(max_length = 128)
     instructions = models.CharField(max_length = 256)
-    views = models.IntegerField(default=0)
-    likes = models.IntegerField(default=0)
+    views = models.IntegerField(default=0)    
     average_rating = models.IntegerField(default=0)
     slug = models.SlugField()
     
@@ -63,8 +62,8 @@ class Comment(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     picture = models.ImageField(upload_to='profile_images', blank=True)
-    ratings = models
     rated = models.ManyToManyField(Recipe, blank=True)
+    likes = models.IntegerField(default=0)
     
     def __str__(self):
         return self.user.username
