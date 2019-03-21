@@ -31,13 +31,15 @@ class Egg(models.Model):
     
     
 class Recipe(models.Model):
-    category = models.ForeignKey(Egg)
+    egg_type = models.ForeignKey(Egg)
     title = models.CharField(max_length = 128)
     author = models.ForeignKey(User)
     upload = models.FileField(upload_to='uploads/%Y/%m/%d/', default = None)
-    url = models.URLField()
+    ingrediants = models.CharField(max_length = 128)
+    instructions = models.CharField(max_length = 256)
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
+    average_rating = models.IntegerField(default=0)
     slug = models.SlugField()
     
     def save(self, *args, **kwargs):
@@ -45,7 +47,7 @@ class Recipe(models.Model):
         super(Recipe, self).save(*args, **kwargs)
     
     class Meta:
-        verbose_name_plural =  'pages'
+        verbose_name_plural =  'recipes'
     
     def __str__(self):
         return self.title
@@ -53,16 +55,22 @@ class Recipe(models.Model):
 class Comment(models.Model):
     user = models.ForeignKey(User)
     content = models.CharField(max_length = 512)
+    recipe = models.ForeignKey(Recipe)
+    
+    def __str__(self):
+        return self.content
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     picture = models.ImageField(upload_to='profile_images', blank=True)
+    ratings = models
+    rated = models.ManyToManyField(Recipe, blank=True)
     
     def __str__(self):
         return self.user.username
     
-    
-    
-    
-    
+class Rating(models.Model):
+    user = models.ForeignKey(User)
+    recipe = models.ForeignKey(Recipe)
+    rated = models.IntegerField()
     

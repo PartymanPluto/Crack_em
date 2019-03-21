@@ -6,7 +6,7 @@ Created on Tue Mar 19 14:53:00 2019
 """
 
 from django import forms 
-from crack_app.models import Recipe, UserProfile, Comment
+from crack_app.models import Recipe, UserProfile, Comment, Rating
 from django.contrib.auth.models import User
 
 EGG_TYPES = [('omlette', 'An omlette'),
@@ -16,9 +16,15 @@ EGG_TYPES = [('omlette', 'An omlette'),
              ('sauce/filling', 'Sauce/Filling'),
              ('other', 'something else...')]
 
+RATINGS = [(1, "(1) Shell-shockingly bad!"), 
+           (2, "(2) Hardly egg-ceptional"),
+           (3, "(3) "),
+           (4, "(4) "),
+           (5, "(5) "),
+           ]
 
 class RecipeForm(forms.ModelForm):
-    name = forms.CharField(max_length = 128, 
+    title = forms.CharField(max_length = 128, 
                            help_text = 'Please enter the name of your creation!')
     egg_type = forms.CharField(label = 'What sort of egg is your creation?',
                                widget = forms.Select(choices=EGG_TYPES), 
@@ -27,15 +33,15 @@ class RecipeForm(forms.ModelForm):
     ratings = forms.IntegerField(widget=forms.HiddenInput(), initial={'0':0, 
                                  '1':0,'2':0,'3':0,'4':0,'5':0,'6':0,'7':0,
                                  '8':0,'9':0,'10':0})
-    Ingrediants = forms.CharField(help_text = '''Please enter your ingrediants 
+    ingrediants = forms.CharField(help_text = '''Please enter your ingrediants 
                                   in a comma seperated list here in the form of 
                                   "IngrediantA : quantity".''')
-    Instructions = forms.CharField(help_text = '''You can enter the instuctions
+    instructions = forms.CharField(help_text = '''You can enter the instuctions
                                    for your creation here!''')
     
     class Meta:
         model = Recipe
-        exclude= ('average_ratings', 'recipe_id')
+        fields = ('title', 'egg_type', 'views', 'ratings', 'ingrediants', 'instructions')
     
     
 class UserForm(forms.ModelForm):
@@ -58,6 +64,14 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('user', 'content')
+        
+class RatingForm(forms.ModelForm):
+    rated = forms.IntegerField(label= 'How did you find this recipe?',
+                               forms.Select(choice=ratings))
+    
+    class Meta:
+        model = Rating
+        fields=('rated',)
     
     
     

@@ -1,10 +1,11 @@
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse
-from crack_app.models import Egg, Recipe, Comment, UserProfile
-from crack_app.forms import RecipeForm, CommentForm, UserProfileForm
+from crack_app.models import Egg, Recipe, Comment, UserProfile, Rating
+from crack_app.forms import RecipeForm, CommentForm, UserProfileForm, RatingForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from registration.backends.simple.views import RegistrationView
+from datetime import datetime
 
 #Basic pages
 def home(request):
@@ -61,26 +62,46 @@ def show_recipe(request, recipe_name_slug):
     except Recipe.DoesNotExist:
         cd = {'recipe': None, 'comments':None}
     if recipe:
+        request.session.set_test_cookie()
+        visitor_cookie_handler(request)
+        recipe.views += request.session['visits']
+        recipe.average_ratings = ratings_sum(recipe)
+        user_profile = UserProfile.object.get(user = request.user)
+        formR = RatingForm()
         formC = CommentForm()
-        #formR = RatingForm()
         if request.method == "POST":
-            data = request.POST
-            if 'submit_comment' in data:
-                formC = CommentForm(data)
-                if formC.is_valid():
-                    comment = formC.save(commit = False)
-                    recipe.comments.append(comment)
-                    return show_recipe('recipe', recipe_name_slug)
-                else:
-                    print(formC.errors)
-            '''elif 'submit_rating' in data:
-                formR = RatingForm(data)
-                if formC.is_valid():
-                    comment = formC.save(commit = False)
-                    recipe.comments.append(comment)
-                    return show_recipe(request, recipe_name_slug)
-                else:
-                    print(form.errors)'''
+            if request.user.is_authenticated():
+                data = request.POST
+                if 'submit_comment' in data:
+                    formC = CommentForm(data)
+                    if formC.is_valid():
+                        formC.save(commit = True)
+                        return show_recipe('recipe', recipe_name_slug)
+                    else:
+                        print(formC.errors)
+                elif 'submit_rating' in data:
+                    if recipe.user_profile_set.filter(pk=user_profile.pk).exists():
+                        rating = Rating.object.filter(user=request.user, recipe=recipe)
+                        formR = RatingForm(data, instance = rating)
+                        if formR.is_valid():
+                            formR.save(commit=True)
+                            return redirect('recipe', recipe_name_slug)
+                        else:
+                            print(formR.errors)
+                    else:
+                        formR = RatingForm(data)
+                        if formR.is_valid():
+                            formR.save(commit=False)
+                            formR.user = request.user
+                            formR.recipe = recipe
+                            UserProfile.add(formR)
+                            return redirect('recipe', recipe_name_slug)
+                        else:
+                            print(formR.errors)
+            else:
+                print("You need to be logged in to comment on/rate a recipe.")
+        cd['formC'] = formC
+        cd['formR'] = formR
     return render(request, 'crack_app/recipe.html', cd)
 
 def add_recipe(request):
@@ -92,7 +113,6 @@ def add_recipe(request):
             recipe = form.save(commit =False)
             recipe.views = 0
             recipe.average_rating = 0
-            recipe.ratings = []
             return show_recipe(request, recipe.slug)
         else:
             print(form.errors)
@@ -100,7 +120,15 @@ def add_recipe(request):
     cd = {'form':form}
     return render(request, 'crack_app/add_recipe.html', cd)
 
-
+def ratings_sum(recipe):
+    ratings = Rating.objects.filter(recipe=recipe)
+    if len(ratings) < 5:
+        return 0
+    else:
+        sum = 0
+        for r in ratings:
+            sum+= r
+        return sum/len(ratings)
 
 #View for showing a user's account page    
 @login_required
@@ -180,6 +208,29 @@ def rate_recipe(request):
         rec = Recipe.objects.get(id=int(rec_id))
         if rec:
             rec.ratings.append(request.POST)
+            
+#Cookie handling 
+def get_server_side_cookie(request, cookie, default_val=None):
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
+
+def visitor_cookie_handler(request):
+    visits = int(get_server_side_cookie(request, 'visits', '1'))
+    last_visit_cookie = get_server_side_cookie(request,
+                                               'last_visit', 
+                                               str(datetime.now()))
+    last_visit_time = datetime.strptime(last_visit_cookie[:-7],
+                                        '%Y-%m-%d %H:%M:%S')
+    
+    if(datetime.now() - last_visit_time).days > 0:
+        visits += 1
+        request.session['last_visit'] =  str(datetime.now())
+    else:
+        request.session['last_visit'] = last_visit_cookie 
+        
+    request.session['visits'] = visits
 
 #!-----WIP functions------!
 '''@login_required
@@ -195,28 +246,7 @@ def add_comment(request):
             
 #!-----------------!
 
-#Cookie handling 
-"""def get_server_side_cookie(request, cookie, default_val=None):
-    val = request.session.get(cookie)
-    if not val:
-        val = default_val
-    return val"""
 
-"""def visitor_cookie_handler(request):
-    visits = int(get_server_side_cookie(request, 'visits', '1'))
-    last_visit_cookie = get_server_side_cookie(request,
-                                               'last_visit', 
-                                               str(datetime.now()))
-    last_visit_time = datetime.strptime(last_visit_cookie[:-7],
-                                        '%Y-%m-%d %H:%M:%S')
-    
-    if(datetime.now() - last_visit_time).days > 0:
-        visits += 1
-        request.session['last_visit'] =  str(datetime.now())
-    else:
-        request.session['last_visit'] = last_visit_cookie 
-        
-    request.session['visits'] = visits"""
     
     
     
