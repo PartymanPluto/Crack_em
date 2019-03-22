@@ -1,0 +1,22 @@
+name: egg_shell
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2019.1.23=0
+  - certifi=2018.11.29=py37_0
+  - openssl=1.1.1b=he774522_0
+  - pip=19.0.3=py37_0
+  - python=3.7.2=h8c8aaf0_10
+  - setuptools=40.8.0=py37_0
+  - sqlite=3.26.0=he774522_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.15.26706=h3a45250_0
+  - wheel=0.33.1=py37_0
+  - wincertstore=0.2=py37_0
+  - pip:
+    - django==1.11.17
+    - django-registration-redux==1.4
+    - pillow==5.4.1
+    - pytz==2018.9
+prefix: C:\Users\thero\Anaconda3\envs\egg_shell
+

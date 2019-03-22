@@ -9,12 +9,19 @@ from django import forms
 from crack_app.models import Egg, Recipe, UserProfile, Comment, Rating
 from django.contrib.auth.models import User
 
-EGG_TYPES = [('Omlette', 'An omlette'),
-             ('Fried', 'Fried'),
-             ('Scrambled', 'Scrambled'),
-             ('Poached', 'Poached'),
-             ('Sauces/Fillings', 'Sauce/Filling'),
-             ('Other', 'something else...')]
+Omlette = Egg.objects.filter(title ='Omlette')
+Fried = Egg.objects.get(title ='Fried')
+Scrambled = Egg.objects.get(title='Scrambled')
+Poached =Egg.objects.get(title ='Poached')
+Sauces = Egg.objects.get(title ='Sauces/Fillings')
+Other = Egg.objects.get(title = 'Other')
+
+EGG_TYPES = [(Omlette, 'An omlette'),
+             (Fried, 'Fried'),
+             (Scrambled, 'Scrambled'),
+             (Poached, 'Poached'),
+             (Sauces, 'Sauce/Filling'),
+             (Other, 'something else...')]
 
 RATINGS = [(1, "(1) Shell-shockingly bad!"), 
            (2, "(2) Hardly egg-ceptional"),
@@ -33,10 +40,10 @@ class EggForm(forms.ModelForm):
 class RecipeForm(forms.ModelForm):
     title = forms.CharField(max_length = 128, 
                            help_text = 'Please enter the name of your creation!')
-    egg_type = forms.CharField(help_text = 'What sort of egg is your creation?',
+    et = forms.CharField(help_text = 'What sort of egg is your creation?',
                                label = 'What sort of egg is your creation?',
                                widget = forms.Select(choices=EGG_TYPES), 
-                               required = False)
+                               required = True)
     image = forms.ImageField(help_text = 'What does your masterpiece look like?',
                              required = False)
     views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)

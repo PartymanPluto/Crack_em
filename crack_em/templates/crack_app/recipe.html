@@ -8,6 +8,10 @@ recipe
 {% block body_block %}
     {% if recipe %}
         <h1>{{ recipe.title }}</h1>
+        <img src="{{ MEDIA_URL }}{{recipe.image }}"
+         width="300"
+         height="300"
+         alt="{{recipe.title}}" />
         {% if ingrediants %}
             <ul>
                 {%for ing in ingrediants %}
