@@ -33,10 +33,12 @@ class EggForm(forms.ModelForm):
 class RecipeForm(forms.ModelForm):
     title = forms.CharField(max_length = 128, 
                            help_text = 'Please enter the name of your creation!')
-    egg_type = forms.CharField(label = 'What sort of egg is your creation?',
+    egg_type = forms.CharField(help_text = 'What sort of egg is your creation?',
+                               label = 'What sort of egg is your creation?',
                                widget = forms.Select(choices=EGG_TYPES), 
                                required = False)
-    image = forms.ImageField(required = False)
+    image = forms.ImageField(help_text = 'What does your masterpiece look like?',
+                             required = False)
     views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
     ingrediants = forms.CharField(help_text = '''Please enter your ingrediants 
                                   in a comma seperated list here in the form of 
