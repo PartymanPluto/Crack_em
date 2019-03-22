@@ -155,6 +155,7 @@ def user_account_page(request, username):
     
     try:
         user = User.objects.get(username=username)
+        user_recipes = Recipe.objects.filter(author=user)
         if request.user == user:
             profile = UserProfile.objects.filter(user=User.objects.get(username=username))[0]
             form = UserProfileForm(
@@ -170,6 +171,7 @@ def user_account_page(request, username):
             cd['selected_user'] = user
             cd['selected_profile'] = profile
             cd['form'] = form
+            cd['recipes'] = user_recipes
         else:
             return redirect('login')
             
@@ -177,6 +179,7 @@ def user_account_page(request, username):
         cd['selected_user'] = None
         cd['selected_profile'] = None
         cd['form'] = None
+        cd['recipes'] = None
     
     return render(request, 'crack_app/profile.html', cd)
 

@@ -9,12 +9,12 @@ from django import forms
 from crack_app.models import Egg, Recipe, UserProfile, Comment, Rating
 from django.contrib.auth.models import User
 
-EGG_TYPES = [('omlette', 'An omlette'),
-             ('fried', 'Fried'),
-             ('scrambled', 'Scrambled'),
-             ('poached', 'Poached'),
-             ('s/f', 'Sauce/Filling'),
-             ('other', 'something else...')]
+EGG_TYPES = [('Omlette', 'An omlette'),
+             ('Fried', 'Fried'),
+             ('Scrambled', 'Scrambled'),
+             ('Poached', 'Poached'),
+             ('Sauces/Fillings', 'Sauce/Filling'),
+             ('Other', 'something else...')]
 
 RATINGS = [(1, "(1) Shell-shockingly bad!"), 
            (2, "(2) Hardly egg-ceptional"),
