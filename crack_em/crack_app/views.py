@@ -145,7 +145,7 @@ def user_account_page(request, username):
     try:
         user = User.objects.get(username=username)
         if request.user == user:
-            profile = UserProfile.objects.filter(user=username)
+            profile = UserProfile.objects.filter(user=User.objects.get(username=username))[0]
             form = UserProfileForm(
                     {'picture': profile.picture})
             if request.method == "POST":
@@ -169,12 +169,11 @@ def user_account_page(request, username):
     
     return render(request, 'crack_app/profile.html', cd)
 
-#Class for handling user authentication
+#User authentication
 class MyRegistrationView(RegistrationView):
     def get_success_url(self, user):
         return reverse('register_profile')
-    
-@login_required
+
 def register_profile(request):
     form = UserProfileForm
     if request.method == 'POST':
@@ -183,7 +182,7 @@ def register_profile(request):
             user_profile = form.save(commit=False)
             user_profile.user = request.user
             user_profile.save()
-            return redirect('index')
+            return redirect('home')
         else:
             print(form.errors)
         

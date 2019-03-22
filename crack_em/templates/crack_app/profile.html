@@ -18,10 +18,10 @@
 	</button>
 </div>	
 <div>
-    {% if selected_profile.ratings %}
+    {% if selected_profile.rated %}
         <ul>
-        {% for recipe, rating in selected_profile.ratings.keys() %}
-            <li><a href="{{ recipe.url }}">{{ recipe.title }}</a></li><strong>{{ rating }}</strong>
+        {% for recipe, rating in selected_profile.rated %}
+            <li><a href="{% url 'recipe' recipe_slug %}">{{ recipe.title }}</a></li><strong>{{ rating }}</strong>
         {% endfor %}
         </ul>
     {% else %}
@@ -38,4 +38,5 @@
     {% endif %}
 </div>
 <div id="edit_profile"></div>
+{% endblock %}
 

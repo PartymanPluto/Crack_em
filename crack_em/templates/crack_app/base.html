@@ -25,10 +25,10 @@
             	<a href="{% url 'eggs' %}> Find recipes for your favourite type of egg here! </a>
 				<li><a href="{% url 'about' %}">About Us</a></li>
 				<li><a href="{% url 'contact' %}">Contact Us!</a></li>
-				<li><a href="{% url 'FAQ' %}">FAQ</a></li>		
+				<li><a href="{% url 'FAQ' %}">FAQ</a></li>	
 				{% if user.is_authenticated %}
                     <li><a href="{% url 'profile' user.username %}">Profile</a></li>
-                    <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
+                    <li><a href="{% url 'auth_logout' %}?next=/crack_em/">Logout</a></li>
                 {% else %} 		
                     <li><a href="{% url 'registration_register' %}">Sign Up</a></li>
                     <li><a href="{% url 'auth_login' %}">Login</a><li>
