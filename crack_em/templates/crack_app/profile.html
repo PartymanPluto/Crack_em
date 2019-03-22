@@ -28,7 +28,19 @@
     {% else %}
         <strong>{{ selected_user.username }} has not made any recipes yet</strong>
     {% endif %}
-</div>   
+</div> 
+#An attempt at adding a list of pages rated by the user to their profile, not in pythonanywhere
+<div>
+    {% if selected_profile.rated %}
+        <ul>
+        {% for recipe, rating in selected_profile.rated %}
+            <li><a href="{% url 'recipe' recipe_slug %}">{{ recipe.title }}</a></li><strong>{{ rating }}</strong>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>This user has not rated any recipes yet.</strong>
+    {% endif %}
+</div>  
 <div>
     {% if selected_user.username == user.username %}
         <form method="post" action="." enctype="multipart/form-data">
