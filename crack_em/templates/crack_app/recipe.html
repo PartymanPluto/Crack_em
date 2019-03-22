@@ -1,0 +1,73 @@
+{% extends 'crack_app/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+	{{ recipe.title }}
+{% endblock %}
+recipe
+{% block body_block %}
+    {% if recipe %}
+        <h1>{{ recipe.title }}</h1>
+        {% if ingrediants %}
+            <ul>
+                {%for ing in ingrediants %}
+                    <li>{{ ing }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <strong> No ingrediants! </strong>
+        {% endif %}
+        <div>
+            <strong>Instructions</strong>
+            {% if instructions %}
+                {% for step, inst in instructions.items %}
+                    <p>{{ step }}. {{ inst }}</p>
+                {% endfor %}    
+            {% else %}
+                <strong> No instructions! </strong>
+            {% endif %}
+        </div>
+        <h2> Add your comments here! </h2>
+        <div>
+            <form id="formC" method="post" action="/crack_em/recipe/(?P<recipe_slug>[\w\-]+)/">
+                {% csrf_token %}
+                {% for hidden in formC.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                {% for field in formC.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="submit" value="Leave a comment!" />
+            </form>
+        </div>
+        <div>
+            <form id="formR" method="post" action="/crack_em/recipe/(?P<recipe_slug>[\w\-]+)/">
+                {% csrf_token %}
+                {% for hidden in formR.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                {% for field in formR.visible_fields %}
+                    {{ field.errors }}
+                    {{ field.help_text }}
+                    {{ field }}
+                {% endfor %}
+                <input type="submit" name="submit" value="Give this recipe a rating!" />
+            </form>
+        </div>
+    {% else %}
+        <h3>The recipe you're looking for hasn't been cooked up yet!</h3>
+    {% endif %}
+{% endblock %}
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
