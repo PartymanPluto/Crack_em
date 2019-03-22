@@ -10,16 +10,16 @@ from datetime import datetime
 
 #Basic pages
 def home(request):
-    omlettes = Recipe.objects.filter(egg_type='omlette').order_by('views')[:5]
-    fried = Recipe.objects.filter(egg_type='fried').order_by('views')[:5]
-    scrambled = Recipe.objects.filter(egg_type='scrambled').order_by('views')[:5]
-    poached = Recipe.objects.filter(egg_type='poached').order_by('views')[:5]
-    sf = Recipe.objects.filter(egg_type='s/f').order_by('views')[:5]
-    other = Recipe.objects.filter(egg_type='other').order_by('views')[:5]
+    omlettes = Recipe.objects.filter(egg_type=Egg.objects.get(title='Omlette')).order_by('views')[:2]
+    fried = Recipe.objects.filter(egg_type=Egg.objects.get(title='Fried')).order_by('views')[:1]
+    scrambled = Recipe.objects.filter(egg_type=Egg.objects.get(title='Scrambled')).order_by('views')[:1]
+    poached = Recipe.objects.filter(egg_type=Egg.objects.get(title='Poached')).order_by('views')[:1]
+    sf = Recipe.objects.filter(egg_type=Egg.objects.get(title='Sauces/Fillings')).order_by('views')[:1]
+    other = Recipe.objects.filter(egg_type=Egg.objects.get(title='Other')).order_by('views')[:1]
     recipes = {'Omlettes': omlettes, 'Fried': fried, 'Scrambled': scrambled, 'Poached': poached, 'Sauces & Fillings': sf, 'other': other}
     cd = {'recipes': recipes }
     
-    response = render(request, 'crack_app/egg_types.html', cd)
+    response = render(request, 'crack_app/home.html', cd)
     return response
 
 def about(request):
@@ -42,7 +42,7 @@ def eggs(request):
     response = render(request, 'crack_app/egg_types.html', cd)
     return response
 
-def show_eggs(request, egg_slug):
+def show_egg(request, egg_slug):
     cd = {}
     
     try:
@@ -58,16 +58,19 @@ def show_eggs(request, egg_slug):
         
     return render(request, 'crack_app/egg.html', cd)
         
-def show_recipe(request, recipe_name_slug):
+def show_recipe(request, recipe_slug):
     try:
-        recipe = Recipe.objects.get(slug = recipe_name_slug)
+        recipe = Recipe.objects.get(slug = recipe_slug)
         comments = Comment.objects.filter(recipe = recipe)
         cd = {'recipe': recipe, 'comments':comments}
         request.session.set_test_cookie()
         visitor_cookie_handler(request)
         recipe.views += request.session['visits']
         recipe.average_ratings = ratings_sum(recipe)
-        user_profile = UserProfile.object.get(user = request.user)
+        try:
+            user_profile = UserProfile.objects.get(user = request.user)
+        except UserProfile.DoesNotExist:
+            user_profile = None
         formR = RatingForm()
         formC = CommentForm()
         if request.method == "POST":
@@ -77,7 +80,7 @@ def show_recipe(request, recipe_name_slug):
                     formC = CommentForm(data)
                     if formC.is_valid():
                         formC.save(commit = True)
-                        return redirect('recipe', recipe_name_slug)
+                        return redirect('recipe', recipe_slug)
                     else:
                         print(formC.errors)
                 elif 'submit_rating' in data:
@@ -86,7 +89,7 @@ def show_recipe(request, recipe_name_slug):
                         formR = RatingForm(data, instance = rating)
                         if formR.is_valid():
                             formR.save(commit=True)
-                            return redirect('recipe', recipe_name_slug)
+                            return redirect('recipe', recipe_slug)
                         else:
                             print(formR.errors)
                     else:
@@ -96,7 +99,7 @@ def show_recipe(request, recipe_name_slug):
                             formR.user = request.user
                             formR.recipe = recipe
                             UserProfile.add(formR)
-                            return redirect('recipe', recipe_name_slug)
+                            return redirect('recipe', recipe_slug)
                         else:
                             print(formR.errors)
             else:
@@ -189,15 +192,16 @@ def register_profile(request):
 
 #Views for liking and commenting
 @login_required
-def like_profile(request):
+def like_user(request):
     profile_id = None
     if request.method == 'GET':
-        profile_id = request.GET['recipe_id']
-    likes = 0
+        profile_id  =request.GET['selected_profile_id']
+        likes = 0
     if profile_id:
-        profile = UserProfile.objects.get(id=int(profile_id))
+        profile = UserProfile.objects.get(id=profile_id)
         if profile:
-            likes = profile.likes + 1
+            likes = profile.likes +1
+            profile.likes = likes
             profile.save()
     return HttpResponse(likes)
 

@@ -1,31 +1,17 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
-# Create your models here.
 
 
-class Egg(models.Model):
-    slug = models.SlugField(unique=True)
-    SCRAMBLED = 'scrambled'
-    OMLETTE = 'omlette'
-    FRIED = 'fried'
-    POACHED = 'poached'
-    OTHER = 'other'
-    EGG_CHOICES = (
-        (SCRAMBLED, 'Scrambled'),
-        (OMLETTE, 'Omlette'),
-        (FRIED, 'Fried'),
-        (POACHED, 'Poached'),
-        (OTHER, 'Other'),
-    )
+class Egg(models.Model):  
+    title = models.CharField(max_length = 128, unique = True)
+    slug = models.SlugField(unique = True)
     
-    title = models.CharField(
-        max_length = 128,
-        choices = EGG_CHOICES,
-        default = SCRAMBLED        
-    )
-    
-    def egg_selected(self):
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Egg, self).save(*args, **kwargs)
+        
+    def __str__(self):
         return self.title
     
     
@@ -35,14 +21,14 @@ class Recipe(models.Model):
     title = models.CharField(max_length = 128)
     author = models.ForeignKey(User)
     image = models.ImageField(upload_to='recipe_images', default = None)
-    ingrediants = models.CharField(max_length = 256)
-    instructions = models.CharField(max_length = 1024)
+    ingrediants = models.CharField(max_length = 512)
+    instructions = models.CharField(max_length = 2048)
     views = models.IntegerField(default=0)
     average_rating = models.IntegerField(default=0)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length = 128, unique=True)
     
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.title)
         super(Recipe, self).save(*args, **kwargs)
     
     class Meta:

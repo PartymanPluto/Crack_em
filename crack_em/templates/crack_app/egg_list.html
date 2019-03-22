@@ -1,7 +1,17 @@
 <ul>
 {% if eggs %}
     {% for egg in eggs %}
-        <li><a href="{% url 'show_egg' egg.slug %}">{{ egg.name }}</a></li>
+        {% if egg == current_egg %}
+            <li>
+            <strong>
+            <a href="{% url 'show_egg' egg.slug %}">{{ egg.title }}</a>
+            </strong>
+            </li>
+        {% else %}
+            <li>
+                <a href="{% url 'show_egg' egg.slug %}">{{ egg.title }}</a>
+            </li>
+        {% endif %}
     {% endfor %}
 {% else %}
     <li><strong>There are no eggs present.</strong></li>

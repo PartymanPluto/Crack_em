@@ -8,19 +8,22 @@
 {% block body_block %}
     <h1> Home </h1>
     {% if recipes %}
-        {% for recipe_list in recipes %}
+        {% for key, recipe_list in recipes.items %}
+            <div>
             {% if recipe_list %}
-                <div>
-                    <h2>Our mosted viewed {{ recipe_list.key() }} Recipes </h2>
-                    <ul>
-                        {% for recipe in recipe_list %}
-                             <li><a href="{{recipe.url}}">{{ recipe.title }}</a></li>
-                        {% endfor %}
-                    </ul>
+                <h2>Our mosted viewed {{ key }} Recipes </h2>
+                <ul>
+                    {% for recipe in recipe_list %}
+                        <li><a href="{% url 'recipe' recipe.slug %}">{{ recipe.title }}</a></li>
+                    {% endfor %}
+                </ul>
             {% else %}
-                <strong> It seems there are no {{ recipe_list.key() }} type recipes yet </strong>
+                <strong> It seems there are no {{ recipe_list }} type recipes yet </strong>
             {% endif %}
-        {% endfor %}
             </div> 
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+            
 
         
