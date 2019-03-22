@@ -23,5 +23,4 @@ urlpatterns = [
         url(r'^register_profile/$', views.register_profile, name='register_profile'),
         url(r'^like/$', views.like_profile, name='like profile'),
         url(r'^rate/$', views.rate_recipe, name= 'rate recipe'),
-        url(r'^like/$', views.like_user, name='like_user'),
         ]
