@@ -8,11 +8,12 @@ from crack_app.models import Egg, Recipe
 from django.contrib.auth.models import User
 
 def populate():
-    #EGG_TYPES = ['omlette', 'fried', 'scrambled', 'poached', 'sauce', 'other']
+    EGG_TYPES = ['Omlette', 'Fried', 'Scrambled', 'Poached', 'Sauces/Fillings', 
+                 'Other']
     recipes = [
             {"title": "Olly's omlette for 1", 
-             "author": "Jolly Olly",
-             "egg_type": "omlette",
+             "author": "Jolly_Olly",
+             "egg_type": "Omlette",
              "ing": """Eggs : 2 , water : 2 tbsp , salt : 1/8 tsp ,
              pepper : a dash, butter : 1 tsp , filling of choice : 1/3 cup""",
              "inst": """ Beat the eggs, water, salt and pepper in a 
@@ -28,7 +29,7 @@ def populate():
              bon appetit!"""},
             {"title": "Spaceman's spectacular spanish omlette for 4",
              "author": "Spaceman2156",
-             "egg_type": "omlette",
+             "egg_type": "Omlette",
              "ing": """eggs : 6, potatoes : 500g, white onion : 1, 
              olive oil(extra-virgin) : 150ml, flat-leaf parsley : 3 tbsp""",
              "inst":"""Prep: Peel all 500g of potatoes and then cut 
@@ -53,8 +54,8 @@ def populate():
              the omlette onto a plate and leaving it to cool for 10 minutes."""
              },
             {"title":"Fried eggs 'sunny side on Leith' up",
-             "author": "Poached proclaimer",
-             "egg_type": "fried",
+             "author": "Poached_Proclaimer",
+             "egg_type": "Fried",
              "ing": """eggs: as many as needed, Plenty of olive oil 
              and butter: """,
              "inst": """Add enough oil to the pan so that it just 
@@ -68,8 +69,8 @@ def populate():
              just-cooked through, the yolk still shiny and runny."""
              },
             {"title": "Mama's homemade cheesy scrambled eggs",
-             "author": "Tutankhamun",
-             "egg_type": "scrambled",
+             "author": "Tutankhamun17",
+             "egg_type": "Scrambled",
              "ing": """eggs: two, milk: a splash, cheese: way too much,
              salt & pepper: a pinch each""",
              "inst": """Beat the two eggs in a small bowl until they 
@@ -85,8 +86,8 @@ def populate():
              Once the mixture is sufficiently fluffy, turn off the heat and 
              move the newly made eggs onto a plate, ready to serve!""" },
             {"title": "Green eggs and ham",
-             "author": "Sam I am",
-             "egg_type" : "poached",
+             "author": "Sam_I_am",
+             "egg_type" : "Poached",
              "ing": """Free-range eggs : 12, English muffins : 6, 
              white vinegar : 2 Tbsp, Oil : a splash, Spinach : 6 handfuls, 
              High quality ham : 12 slices, Pesto sauce/hollandaise : as needed 
@@ -110,8 +111,8 @@ def populate():
              as much pesto hollandaise as your heart desires. """
              },
             {"title": "The 'Why so serious' side egg salad",
-             "author": "ThE YoKEr42069",
-             "egg_type": "sauce",
+             "author": "THeYoKEr42069",
+             "egg_type": "Sauces/Fillings",
              "ing": """peeled, hard-boiled eggs : 12, chopped green 
              onion : 1/4 cup, chopped celery : 1/2 cup, chopped red bell 
              pepper : 1/2 cup, Djon mustard : 2 Tbsp, mayonaise : 1/3 cup, 
@@ -128,8 +129,8 @@ def populate():
              and black pepper to taste."""
              },
             {"title": "Killer Queen's 'sheer heart attack inducing' scotch eggs",
-             "author": "Hand lover99",
-             "egg_type": "other",
+             "author": "Killer_Queen99",
+             "egg_type": "Other",
              "ing": """eggs : 8 , plain sausage meat : 450g, mixed 
              herbs (chopped) : 3 tbsp, ground mace: a pinch, mustard : 1 tbsp,
              milk : a splash, flour : 50g, breadcrumbs : 100g, vegitable oil : 
@@ -158,30 +159,38 @@ def populate():
              before serving."""
              }]
     
-    #for egg in EGG_TYPES:
-        #add_egg(egg)
-    for rec in recipes:
-        author = add_user(rec["author"])
-        add_recipe(rec["title"], author, rec["egg_type"], 
-                   rec["ing"], rec["inst"])
+    for egg in EGG_TYPES:
+        add_egg(egg)
+        print(egg)
+        print("- {0} - [1]".format(egg))
+    
+    i = 0
+    for i in range(len(recipes)):
+        rec = recipes[i]
+        title = rec["title"]
+        author = User.objects.filter(username=rec["author"])[0]
+        egg_type = Egg.objects.filter(title = rec["egg_type"])[0]
+        ing = rec["ing"]
+        inst = rec["inst"]
+        add_recipe(title, author, egg_type, ing, inst)
         print("- {0} - [1]".format(rec["title"]))
+        i += 1
 
-#def add_egg(t):
- #   e = Egg.objects.get_or_create(title=t)
-  #  return e
+
+def add_egg(t):
+    e = Egg.objects.get_or_create(title=t)
+    return e
 
 def add_recipe(t, a, et, ing, inst):
+    print(1)
     r = Recipe.objects.get_or_create(title=t, author=a, egg_type=et, 
                                      ingrediants=ing, instructions=inst)[0]
+    print(1)
     r.views = 0
     r.likes = 0
     r.average_rating = 0
     r.save()
     return r
-
-def add_user(name):
-    user = User.objects.get_or_create(username=name, password = None, email=None)[0]
-    return user
 
 if __name__ == '__main__':
     print("Starting Rango population script...")

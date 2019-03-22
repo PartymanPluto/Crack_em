@@ -2,12 +2,12 @@
 {% load staticfiles %}
 
 {% block title_block %}
-	{{ egg.name }}
+	{{ egg.title }}
 {% endblock %}
 category
 {% block body_block %}
 	{% if egg %}
-		<h1>{{ egg.name }}</h1>
+		<h1>{{ egg.title }}</h1>
 		
 		{% if recipes %}
 			<ul>
@@ -18,7 +18,7 @@ category
 		{% else %}
 			<strong>There are no recipes for this type of egg at the moment.</strong>
 		{% endif %}
-		<a href="{% url 'add_recipe' egg.slug %}">Add a Recipe!</a>
+		<a href="{% url 'add_recipe' %}">Add a Recipe!</a>
 	{% else %}
 		The specified egg does not exist!
 	{% endif %}
