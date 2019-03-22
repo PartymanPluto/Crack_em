@@ -168,6 +168,7 @@ def populate():
     for i in range(len(recipes)):
         rec = recipes[i]
         title = rec["title"]
+        print(User.objects.filter(username=rec["author"]))
         author = User.objects.filter(username=rec["author"])[0]
         egg_type = Egg.objects.filter(title = rec["egg_type"])[0]
         ing = rec["ing"]
