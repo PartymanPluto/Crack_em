@@ -11,6 +11,13 @@
      alt="{{selected_user.username}}" />
 <br/>
 <div>
+	<sky id = "like_count>{{selected_profile.likes}}</but>would reccomend{{selected_profile.username}}
+	<button id="likes" data-userid="{{selected_profile.id}}
+		class ="btn btn-primary btn-sm" type = "button">
+		Like
+	</button>
+</div>	
+<div>
     {% if selected_profile.ratings %}
         <ul>
         {% for recipe, rating in selected_profile.ratings.keys() %}

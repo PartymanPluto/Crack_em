@@ -34,12 +34,10 @@ class Recipe(models.Model):
     egg_type = models.ForeignKey(Egg)
     title = models.CharField(max_length = 128)
     author = models.ForeignKey(User)
-
     image = models.ImageField(upload_to='recipe_images', default = None)
     ingrediants = models.CharField(max_length = 256)
     instructions = models.CharField(max_length = 1024)
     views = models.IntegerField(default=0)
-
     average_rating = models.IntegerField(default=0)
     slug = models.SlugField()
     

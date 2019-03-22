@@ -236,6 +236,20 @@ def visitor_cookie_handler(request):
         
     request.session['visits'] = visits
 
+def like_user(request):
+    profile_id = None
+    if request.method == 'GET':
+        profile_id  =request.GET['selected_profile_id']
+        likes = 0
+    if profile_id:
+        profile = UserProfile.objects.get(id=profile_id)
+        if profile:
+            likes = profile.likes +1
+            profile.likes = likes
+            profile.save()
+    return HttpResponse(likes)
+    
+    
 #!-----WIP functions------!
 '''@login_required
 def add_comment(request):
