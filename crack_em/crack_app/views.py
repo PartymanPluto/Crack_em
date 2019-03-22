@@ -62,7 +62,16 @@ def show_recipe(request, recipe_slug):
     try:
         recipe = Recipe.objects.get(slug = recipe_slug)
         comments = Comment.objects.filter(recipe = recipe)
-        cd = {'recipe': recipe, 'comments':comments}
+        ing = recipe.ingrediants.split(',')
+        inst = recipe.instructions.split(';')
+        inst_dict = {}
+        j = 1
+        for i in inst:
+            print(i)
+            inst_dict[str(j)] = i
+            j += 1
+        print(inst_dict)
+        cd = {'recipe': recipe, 'ingrediants':ing, 'instructions':inst_dict, 'comments':comments}
         request.session.set_test_cookie()
         visitor_cookie_handler(request)
         recipe.views += request.session['visits']
@@ -107,7 +116,7 @@ def show_recipe(request, recipe_slug):
         cd['formC'] = formC
         cd['formR'] = formR
     except Recipe.DoesNotExist:
-        cd = {'recipe': None, 'comments':None, 'formC': None, 'formR': None}
+        cd = {'recipe': None,'ingrediants': None, 'instructions': None, 'comments':None, 'formC': None, 'formR': None}
     return render(request, 'crack_app/recipe.html', cd)
 
 def add_recipe(request):
@@ -126,6 +135,8 @@ def add_recipe(request):
 
     cd = {'form':form}
     return render(request, 'crack_app/add_recipe.html', cd)
+
+#def add_comment(request):
 
 def ratings_sum(recipe):
     ratings = Rating.objects.filter(recipe=recipe)

@@ -67,11 +67,11 @@ class UserProfileForm(forms.ModelForm):
         fields = ('picture',)
     
 class CommentForm(forms.ModelForm):
-    content = forms.CharField(help_text = '''Tell the chef our thoughts!''')
+    content = forms.CharField(max_length = 512,)
     
     class Meta:
         model = Comment
-        fields = ('user', 'content')
+        fields = ('content',)
         
 class RatingForm(forms.ModelForm):
     rated = forms.IntegerField(label= 'How did you find this recipe?',
